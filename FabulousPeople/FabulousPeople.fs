@@ -18,7 +18,6 @@ module App =
     { Name : string
       Surname : string }
 
-
   type Model = 
     { Page : Page
       People : Person list
@@ -70,10 +69,10 @@ module App =
     View.StackLayout(verticalOptions = LayoutOptions.Center, children = [
         View.Entry(placeholder = "Scott",
                    text = curName,
-                   completed = (fun text -> dispatch (Add (UpdateName text))))
+                   completed = (UpdateName >> Add >> dispatch))
         View.Entry(placeholder = "Hanselmann",
                    text = curSurname,
-                   completed = (fun text -> dispatch (Add (UpdateSurname text))))
+                   completed = (UpdateSurname >> Add >> dispatch))
         View.Button(text = "+",
                     command = (fun () -> dispatch (Add AddPerson)))
     ])
