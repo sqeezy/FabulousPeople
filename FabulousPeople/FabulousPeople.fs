@@ -1,6 +1,7 @@
 ﻿namespace FabulousPeople
 
 open System.Diagnostics
+open System.Drawing
 open Fabulous
 open Fabulous.XamarinForms
 open Fabulous.XamarinForms.LiveUpdate
@@ -61,31 +62,43 @@ module App =
       | MainPage -> { model with Page = MainPage}, Cmd.none
     | Add addMsg -> addUpdate addMsg model
   
-  let mainView (dispatch : Msg -> unit) =
-    View.Button(text = "Add Person", command = (fun () -> dispatch (ChangePage AddPage)))
+  let view (model : Model) (dispatch : Msg -> unit) =
 
-  let addView model (dispatch : Msg -> unit) =
-    let (curName, curSurname) = model
-    View.StackLayout(verticalOptions = LayoutOptions.Center, children = [
-        View.Entry(placeholder = "Scott",
-                   text = curName,
-                   completed = (UpdateName >> Add >> dispatch))
-        View.Entry(placeholder = "Hanselmann",
-                   text = curSurname,
-                   completed = (UpdateSurname >> Add >> dispatch))
-        View.Button(text = "+",
-                    command = (fun () -> dispatch (Add AddPerson)))
-    ])
+    let mkButton text command = 
+      View.Button(text = text, command = (fun () -> dispatch command))
 
-  let view (model:Model) dispatch =
+    let mainView =
+      let peopleElements =
+        model.People |> List.map (fun p -> View.Label(text = p.Name, textColor = Color.Black, backgroundColor = Color.AliceBlue))
+      View.StackLayout(verticalOptions = LayoutOptions.Center ,children = [
+        View.StackLayout(children = peopleElements)
+        View.Label(text = sprintf "%i" model.People.Length)
+        mkButton "Add Person" (ChangePage AddPage)
+      ])
+
+    let addView addModel =
+      let (curName, curSurname) = addModel
+      View.StackLayout(verticalOptions = LayoutOptions.Center, children = [
+          View.Entry(placeholder = "Scott",
+                     text = curName,
+                     clearButtonVisibility = ClearButtonVisibility.WhileEditing,
+                     returnType = ReturnType.Next,
+                     completed = (UpdateName >> Add >> dispatch))
+          View.Entry(placeholder = "Hanselmann",
+                     text = curSurname,
+                     clearButtonVisibility = ClearButtonVisibility.WhileEditing,
+                     returnType = ReturnType.Next,
+                     completed = (UpdateSurname >> Add >> dispatch))
+          mkButton "+" (Add AddPerson)
+      ])
+
     View.ContentPage(
       content = 
         View.StackLayout(padding = Thickness 20.0, verticalOptions = LayoutOptions.Center,
           children = [
             match model.Page with
-            | MainPage -> mainView dispatch
-            | AddPage  -> addView model.AddPersonModel dispatch
-
+            | MainPage -> mainView
+            | AddPage  -> addView model.AddPersonModel
           ])
     )
 
