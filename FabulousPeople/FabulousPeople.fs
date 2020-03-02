@@ -74,12 +74,13 @@ module App =
                  returnType = ReturnType.Next,
                  completed = completed)
 
+    let personView person =
+      View.Label(text = sprintf "%s %s" person.Name person.Surname,
+                 textColor = textC,
+                 backgroundColor = Color.Orange)
     let mainView =
-      let peopleElements =
-        model.People |> List.map (fun p -> View.Label(text = p.Name, textColor = Color.Black, backgroundColor = Color.AliceBlue))
       View.StackLayout(verticalOptions = LayoutOptions.Center ,children = [
-        View.StackLayout(children = peopleElements)
-        View.Label(text = sprintf "%i" model.People.Length)
+        View.StackLayout(children = List.map personView model.People)
         mkButton "Add Person" (ChangePage AddPage)
       ])
 
