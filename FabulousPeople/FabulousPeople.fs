@@ -67,6 +67,13 @@ module App =
     let mkButton text command = 
       View.Button(text = text, command = (fun () -> dispatch command))
 
+    let mkEntry placeholder text completed =
+      View.Entry(placeholder = placeholder,
+                 text = text,
+                 clearButtonVisibility = ClearButtonVisibility.WhileEditing,
+                 returnType = ReturnType.Next,
+                 completed = completed)
+
     let mainView =
       let peopleElements =
         model.People |> List.map (fun p -> View.Label(text = p.Name, textColor = Color.Black, backgroundColor = Color.AliceBlue))
@@ -79,16 +86,8 @@ module App =
     let addView addModel =
       let (curName, curSurname) = addModel
       View.StackLayout(verticalOptions = LayoutOptions.Center, children = [
-          View.Entry(placeholder = "Scott",
-                     text = curName,
-                     clearButtonVisibility = ClearButtonVisibility.WhileEditing,
-                     returnType = ReturnType.Next,
-                     completed = (UpdateName >> Add >> dispatch))
-          View.Entry(placeholder = "Hanselmann",
-                     text = curSurname,
-                     clearButtonVisibility = ClearButtonVisibility.WhileEditing,
-                     returnType = ReturnType.Next,
-                     completed = (UpdateSurname >> Add >> dispatch))
+          mkEntry "Scott" curName (UpdateName >> Add >> dispatch)
+          mkEntry "Hanselmann" curSurname (UpdateSurname >> Add >> dispatch)
           mkButton "+" (Add AddPerson)
       ])
 
