@@ -71,15 +71,15 @@ module App =
 
     let mkEntry placeholder text completed =
       View.Entry(placeholder = placeholder,
+                 placeholderColor = faintTextC,
                  text = text,
-                 clearButtonVisibility = ClearButtonVisibility.WhileEditing,
-                 returnType = ReturnType.Next,
+                 textChanged = (fun args -> args.OldTextValue |> completed),
                  completed = completed)
 
     let personView person =
       View.Label(text = sprintf "%s %s" person.Name person.Surname,
                  textColor = textC,
-                 backgroundColor = Color.Orange)
+                 backgroundColor = Color.Orange).HasShadow(true)
     let mainView =
       View.StackLayout(verticalOptions = LayoutOptions.Center ,children = [
         View.StackLayout(children = List.map personView model.People)
