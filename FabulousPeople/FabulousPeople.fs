@@ -64,8 +64,10 @@ module App =
   
   let view (model : Model) (dispatch : Msg -> unit) =
 
-    let mkButton text command = 
-      View.Button(text = text, command = (fun () -> dispatch command))
+    let mkButton text command canExecute=
+      View.Button(text = text,
+                  command = (fun () -> dispatch command),
+                  commandCanExecute = canExecute)
 
     let mkEntry placeholder text completed =
       View.Entry(placeholder = placeholder,
@@ -81,15 +83,15 @@ module App =
     let mainView =
       View.StackLayout(verticalOptions = LayoutOptions.Center ,children = [
         View.StackLayout(children = List.map personView model.People)
-        mkButton "Add Person" (ChangePage AddPage)
+        mkButton "Add Person" (ChangePage AddPage) true
       ])
 
     let addView addModel =
       let (curName, curSurname) = addModel
       View.StackLayout(verticalOptions = LayoutOptions.Center, children = [
-          mkEntry "Scott" curName (UpdateName >> Add >> dispatch)
-          mkEntry "Hanselmann" curSurname (UpdateSurname >> Add >> dispatch)
-          mkButton "+" (Add AddPerson)
+          mkEntry "Name" curName (UpdateName >> Add >> dispatch)
+          mkEntry "Surname" curSurname (UpdateSurname >> Add >> dispatch)
+          mkButton "+" (Add AddPerson) (curName <> "" && curSurname <> "")
       ])
 
     View.ContentPage(
